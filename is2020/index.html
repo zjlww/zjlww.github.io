@@ -1,0 +1,233 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <title>Test</title>
+
+        <!-- Bootstrap -->
+        <link href="statics/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+
+    <div class="container">
+    
+        <div class="page-header">
+            <h1>Neural Homomorphic Vocoder <small>Demos for InterSpeech 2020 Submission</small></h1>
+        </div>
+        <h3> Authors </h3>
+        <div class="row">
+            <div class="col-md-2">
+                <address>
+                    <strong>Zhijun Liu</strong><br>
+                    <a href="mailto:#">sorcererliu[at]gmail[dot]com</a>
+                </address>
+            </div>
+            <div class="col-md-2">
+                <address>
+                    <strong>Kuan Chen</strong><br>
+                    <a href="mailto:#">azrealkuan[at]gmail[dot]com</a>
+                </address>
+            </div>
+            <div class="col-md-2">
+                <address>
+                    <strong>Kai Yu</strong><br>
+                    <a href="mailto:#">kai.yu[at]sjtu[dot]edu[dot]cn</a>
+                </address>
+            </div>
+        </div>
+        <p>
+            The <a href="https://www.data-baker.com/open_source.html">CSMSC open source speech dataset</a> is used for the demo. 
+        <h3> Copy Synthesis Demos </h3>
+        
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">这人#1一哆嗦#3，方向盘#1也#1把不#1稳了#3，差点#1撞上了#1高速#1边道#1护栏#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>NHV(proposed)</strong></td><td><strong>Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009991.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv/009991.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg/009991.wav"></audio></td></tr><tr><td><strong>NSF-adv</strong></td><td><strong>MoL WaveNet</strong></td><td><strong>hn-sinc-NSF</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv/009991.wav"></audio></td><td><audio controls=""><source src="is2020/samples/wavenet/009991.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf/009991.wav"></audio></td></tr><tr><td><strong>NHV-noadv</strong></td><td></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nhv_noadv/009991.wav"></audio></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">那#1女孩儿#1委屈的#1说#3：“我#1一回头#1见你#1已经#1进去了#3我#1不敢#1进去啊#4！</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>NHV(proposed)</strong></td><td><strong>Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009992.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv/009992.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg/009992.wav"></audio></td></tr><tr><td><strong>NSF-adv</strong></td><td><strong>MoL WaveNet</strong></td><td><strong>hn-sinc-NSF</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv/009992.wav"></audio></td><td><audio controls=""><source src="is2020/samples/wavenet/009992.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf/009992.wav"></audio></td></tr><tr><td><strong>NHV-noadv</strong></td><td></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nhv_noadv/009992.wav"></audio></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">小明#1摇摇头说#3：不是#3，我#1只是#1美女#1看多了#3，想#1换个#1口味#1而已#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>NHV(proposed)</strong></td><td><strong>Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009993.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv/009993.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg/009993.wav"></audio></td></tr><tr><td><strong>NSF-adv</strong></td><td><strong>MoL WaveNet</strong></td><td><strong>hn-sinc-NSF</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv/009993.wav"></audio></td><td><audio controls=""><source src="is2020/samples/wavenet/009993.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf/009993.wav"></audio></td></tr><tr><td><strong>NHV-noadv</strong></td><td></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nhv_noadv/009993.wav"></audio></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">接下来#3，红娘#1要求#1记者#1交费#3，记者#1表示#3不知#1表姐#1身份证#1号码#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>NHV(proposed)</strong></td><td><strong>Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009994.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv/009994.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg/009994.wav"></audio></td></tr><tr><td><strong>NSF-adv</strong></td><td><strong>MoL WaveNet</strong></td><td><strong>hn-sinc-NSF</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv/009994.wav"></audio></td><td><audio controls=""><source src="is2020/samples/wavenet/009994.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf/009994.wav"></audio></td></tr><tr><td><strong>NHV-noadv</strong></td><td></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nhv_noadv/009994.wav"></audio></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">李东蓊#1表示#3，自己#1当时#1在#1法庭上#2发表了#1一次#1独特的#1公诉#1意见#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>NHV(proposed)</strong></td><td><strong>Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009995.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv/009995.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg/009995.wav"></audio></td></tr><tr><td><strong>NSF-adv</strong></td><td><strong>MoL WaveNet</strong></td><td><strong>hn-sinc-NSF</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv/009995.wav"></audio></td><td><audio controls=""><source src="is2020/samples/wavenet/009995.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf/009995.wav"></audio></td></tr><tr><td><strong>NHV-noadv</strong></td><td></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nhv_noadv/009995.wav"></audio></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">另一#1男子#1扑了#1上来#3，手里#1拿着#1明晃晃的#1长刀#3，向他#1胸口#1直刺#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>NHV(proposed)</strong></td><td><strong>Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009996.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv/009996.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg/009996.wav"></audio></td></tr><tr><td><strong>NSF-adv</strong></td><td><strong>MoL WaveNet</strong></td><td><strong>hn-sinc-NSF</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv/009996.wav"></audio></td><td><audio controls=""><source src="is2020/samples/wavenet/009996.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf/009996.wav"></audio></td></tr><tr><td><strong>NHV-noadv</strong></td><td></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nhv_noadv/009996.wav"></audio></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">今天#3，快递员#1拿着#1一个#1快递#1在#1办公室#1喊#3：秦王#1是#1哪个#3，有他#1快递#4？</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>NHV(proposed)</strong></td><td><strong>Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009997.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv/009997.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg/009997.wav"></audio></td></tr><tr><td><strong>NSF-adv</strong></td><td><strong>MoL WaveNet</strong></td><td><strong>hn-sinc-NSF</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv/009997.wav"></audio></td><td><audio controls=""><source src="is2020/samples/wavenet/009997.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf/009997.wav"></audio></td></tr><tr><td><strong>NHV-noadv</strong></td><td></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nhv_noadv/009997.wav"></audio></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    <h3> Text-to-Speech Demos </h3>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">随着#1天气#1转热#3，各地的#1游泳#1场所#1开始#1人头#1攒动#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>Tacotron2 + NHV</strong></td><td><strong>Tacotron2 + Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009916.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv_tts/009916.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg_tts/009916.wav"></audio></td></tr><tr><td><strong>Tacotron2 + NSF-adv</strong></td><td><strong>Tacotron2 + hn-sinc-NSF</strong></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv_tts/009916.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf_tts/009916.wav"></audio></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">更让#1徐先生#1纳闷的是#3，房客的#1手机#1也#1打不#1通了#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>Tacotron2 + NHV</strong></td><td><strong>Tacotron2 + Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009917.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv_tts/009917.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg_tts/009917.wav"></audio></td></tr><tr><td><strong>Tacotron2 + NSF-adv</strong></td><td><strong>Tacotron2 + hn-sinc-NSF</strong></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv_tts/009917.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf_tts/009917.wav"></audio></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">遇到#1颠簸时#3，应#1听从#1乘务员的#1安全#1指令#3，回座位#1坐好#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>Tacotron2 + NHV</strong></td><td><strong>Tacotron2 + Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009918.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv_tts/009918.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg_tts/009918.wav"></audio></td></tr><tr><td><strong>Tacotron2 + NSF-adv</strong></td><td><strong>Tacotron2 + hn-sinc-NSF</strong></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv_tts/009918.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf_tts/009918.wav"></audio></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">傍晚#2七个#1小人#1回来了#3，白雪#1公主说#3：你们#1就是#1我#1命中的#1七个#1小矮人吧#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>Tacotron2 + NHV</strong></td><td><strong>Tacotron2 + Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009920.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv_tts/009920.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg_tts/009920.wav"></audio></td></tr><tr><td><strong>Tacotron2 + NSF-adv</strong></td><td><strong>Tacotron2 + hn-sinc-NSF</strong></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv_tts/009920.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf_tts/009920.wav"></audio></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">一种#2表示#1商品#1所有权的#1财物#1证券#3，也称#1商品#1证券#3，如#1提货单#2、交货单#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>Tacotron2 + NHV</strong></td><td><strong>Tacotron2 + Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009922.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv_tts/009922.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg_tts/009922.wav"></audio></td></tr><tr><td><strong>Tacotron2 + NSF-adv</strong></td><td><strong>Tacotron2 + hn-sinc-NSF</strong></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv_tts/009922.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf_tts/009922.wav"></audio></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">会有#1很#1丰富的#1东西#1留下来#3，说都#1说不完#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>Tacotron2 + NHV</strong></td><td><strong>Tacotron2 + Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009923.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv_tts/009923.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg_tts/009923.wav"></audio></td></tr><tr><td><strong>Tacotron2 + NSF-adv</strong></td><td><strong>Tacotron2 + hn-sinc-NSF</strong></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv_tts/009923.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf_tts/009923.wav"></audio></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan=3 style="text-align: left;">这句话#1像#1从天#1而降#3，吓得#1四周#1一片#1寂静#4。</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr><td><strong>Original</strong></td><td><strong>Tacotron2 + NHV</strong></td><td><strong>Tacotron2 + Parallel WaveGAN</strong></td></tr><tr><td><audio controls=""><source src="is2020/samples/original/009924.wav"></audio></td><td><audio controls=""><source src="is2020/samples/nhv_tts/009924.wav"></audio></td><td><audio controls=""><source src="is2020/samples/pwg_tts/009924.wav"></audio></td></tr><tr><td><strong>Tacotron2 + NSF-adv</strong></td><td><strong>Tacotron2 + hn-sinc-NSF</strong></td><td></td></tr><tr><td><audio controls=""><source src="is2020/samples/nsf_adv_tts/009924.wav"></audio></td><td><audio controls=""><source src="is2020/samples/h_sinc_nsf_tts/009924.wav"></audio></td><td></td></tr><tr><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    </div>
+    <script src="statics/jquery/jquery-1.12.4.min.js"></script>
+    <script src="statics/bootstrap/js/bootstrap.min.js"></script>
+    </body>
+    </html>
+    
