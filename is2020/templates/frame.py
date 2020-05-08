@@ -11,7 +11,7 @@ def header(title):
         <title>{title}</title>
 
         <!-- Bootstrap -->
-        <link href="statics/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/statics/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
 
@@ -22,8 +22,8 @@ def header(title):
 def footer():
     footer = """
     </div>
-    <script src="statics/jquery/jquery-1.12.4.min.js"></script>
-    <script src="statics/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/statics/jquery/jquery-1.12.4.min.js"></script>
+    <script src="/statics/bootstrap/js/bootstrap.min.js"></script>
     </body>
     </html>
     """

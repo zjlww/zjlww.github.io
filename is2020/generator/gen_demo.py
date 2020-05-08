@@ -47,7 +47,7 @@ tts_text = [
 
 copy_audios = []
 copy_titles = []
-root = Path("is2020/samples/")
+root = Path("samples/")
 for i in copy_id:
     audios = []
     titles = []
@@ -58,7 +58,6 @@ for i in copy_id:
     copy_titles.append(titles)
 tts_audios = []
 tts_titles = []
-root = Path("is2020/samples/")
 for i in tts_id:
     audios = []
     titles = []
