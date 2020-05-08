@@ -68,26 +68,26 @@ for i in tts_id:
     tts_titles.append(titles)
 
 if __name__ == "__main__":
-    page = header("Test") + \
+    page = header("IS2020 Demo Page") + \
         """
         <div class="page-header">
             <h1>Neural Homomorphic Vocoder <small>Demos for InterSpeech 2020 Submission</small></h1>
         </div>
         <h3> Authors </h3>
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <address>
                     <strong>Zhijun Liu</strong><br>
                     <a href="mailto:#">sorcererliu[at]gmail[dot]com</a>
                 </address>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <address>
                     <strong>Kuan Chen</strong><br>
                     <a href="mailto:#">azrealkuan[at]gmail[dot]com</a>
                 </address>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <address>
                     <strong>Kai Yu</strong><br>
                     <a href="mailto:#">kai.yu[at]sjtu[dot]edu[dot]cn</a>
