@@ -1,5 +1,5 @@
 from math import ceil
-from is2020.templates.frame import header, footer
+from templates.frame import header, footer
 
 
 def audio_line(audios, titles):
