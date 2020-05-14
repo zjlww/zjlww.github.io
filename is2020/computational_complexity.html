@@ -13293,7 +13293,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="LPCNet">LPCNet<a class="anchor-link" href="#LPCNet">&#182;</a></h2><p>We use the formula given in the paper (originally counting FLOPs). The first GRU is made sparse in LPCNet. 
-$C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot f_{s}$, where $d=0.1$, $N_{A}=384$, $N_{B}=16$, and $Q=256$, $f_s = 22050$.</p>
+$C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot 2 f_{s}$, where $d=0.1$, $N_{A}=384$, $N_{B}=16$, and $Q=256$, $f_s = 22050$.</p>
 
 </div>
 </div>
@@ -13389,11 +13389,11 @@ Total FLOPs in LTV filtering:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_total</span> <span class="o">=</span> <span class="n">nhv_convs</span> <span class="o">+</span> <span class="n">nhv_ffts</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;NHV costs {nhv_total/10**8:0.1f} * 10^8 FLOPs per second. Convolutions accounts for {nhv_convs / (nhv_ffts + nhv_convs) * 100:02.0f}</span><span class="si">% o</span><span class="s2">f total complexity.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;NHV costs {nhv_total/10**8:0.1f} * 10^8 FLOPs per second. NN accounts for {nhv_convs / (nhv_ffts + nhv_convs) * 100:02.0f}</span><span class="si">% o</span><span class="s2">f total complexity.&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13410,7 +13410,7 @@ Total FLOPs in LTV filtering:</p>
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>NHV costs 2.6 * 10^8 FLOPs per second. Convolutions accounts for 68% of total complexity.
+<pre>NHV costs 2.6 * 10^8 FLOPs per second. NN accounts for 68% of total complexity.
 </pre>
 </div>
 </div>
