@@ -13077,7 +13077,9 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Computational-Complexity-of-Vocoders">Computational Complexity of Vocoders<a class="anchor-link" href="#Computational-Complexity-of-Vocoders">&#182;</a></h1><p>We report the number of multiplications required to generate 1 second long 22050 Hz audio with different neural vocoders. We do not report real time factors as they are implementation dependent. In the calculation, We do not consider the complexity of mathematical functions, computation happening in feature upsampling and source signal generation. A N point FFT is assumed to cost $2N\log_2 N$ real multiplications.</p>
+<h1 id="Computational-Complexity-of-Vocoders">Computational Complexity of Vocoders<a class="anchor-link" href="#Computational-Complexity-of-Vocoders">&#182;</a></h1><p>We report the number of multiplications required to generate 1 second long 22050 Hz audio for different neural vocoders. We do not report real time factors as they are implementation dependent.</p>
+<p>In the calculation, We do not consider the complexity caused by mathematical functions, network biases, feature upsampling and source signal generation.</p>
+<p>A N point FFT is assumed to cost $5N\log_2 N$ FLOPs.</p>
 
 </div>
 </div>
@@ -13088,7 +13090,16 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">log2</span>
-<span class="n">fft</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">log2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="n">fft</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">log2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">conv</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="n">outc</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">inc</span> <span class="o">/</span> <span class="n">group</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">outc</span> <span class="o">/</span> <span class="n">group</span><span class="p">)</span> <span class="o">*</span> <span class="n">group</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">outc</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">conv_transpose</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">inc</span><span class="p">,</span> <span class="n">outc</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">inc</span> <span class="o">*</span> <span class="n">outc</span> <span class="o">*</span> <span class="n">k</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">outc</span><span class="p">)</span>
+
+<span class="n">complex_multiply</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">4</span>
 </pre></div>
 
     </div>
@@ -13109,8 +13120,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b_nsf_total</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="mi">64</span> <span class="o">+</span> <span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="mi">128</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">128</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">22050</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;b-NSF costs {b_nsf_total/10**10:0.0f} * 10^10 multiplications per second.&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">b_nsf_total</span> <span class="o">=</span> <span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="mi">1</span> <span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="mi">128</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">22050</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;b-NSF costs {b_nsf_total/10**10:0.0f} * 10^10 FLOPs per second.&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13127,7 +13138,7 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>b-NSF costs 4 * 10^10 multiplications per second.
+<pre>b-NSF costs 8 * 10^10 FLOPs per second.
 </pre>
 </div>
 </div>
@@ -13149,8 +13160,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wavenet_total</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">24</span> <span class="o">*</span> <span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="mi">128</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="mi">128</span> <span class="o">*</span> <span class="mi">128</span> <span class="o">+</span> <span class="mi">128</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Gaussian WaveNet costs {wavenet_total/10**10:0.0f} * 10^10 multiplications per second.&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wavenet_total</span> <span class="o">=</span> <span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="mi">24</span> <span class="o">*</span> <span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="mi">22050</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Gaussian WaveNet costs {wavenet_total/10**10:0.0f} * 10^10 FLOPs per second.&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13167,7 +13178,7 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Gaussian WaveNet costs 2 * 10^10 multiplications per second.
+<pre>Gaussian WaveNet costs 4 * 10^10 FLOPs per second.
 </pre>
 </div>
 </div>
@@ -13189,8 +13200,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pwg_total</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">30</span> <span class="o">*</span> <span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="mi">128</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Parallel WaveGAN costs {pwg_total/10**10:0.0f} * 10^10 multiplications per second.&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pwg_total</span> <span class="o">=</span> <span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="mi">30</span> <span class="o">*</span> <span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">64</span> <span class="o">+</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Parallel WaveGAN costs {pwg_total/10**10:0.0f} * 10^10 FLOPs per second.&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13207,7 +13218,69 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Parallel WaveGAN costs 2 * 10^10 multiplications per second.
+<pre>Parallel WaveGAN costs 4 * 10^10 FLOPs per second.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="MelGAN">MelGAN<a class="anchor-link" href="#MelGAN">&#182;</a></h2><p>We use the same hyperparameters reported in the paper.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">residual_stack</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">melgan_total</span> <span class="o">=</span> <span class="n">conv</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> \
+    <span class="n">conv_transpose</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> \
+    <span class="n">residual_stack</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> \
+    <span class="n">conv_transpose</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> \
+    <span class="n">residual_stack</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> \
+    <span class="n">conv_transpose</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> \
+    <span class="n">residual_stack</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> \
+    <span class="n">conv_transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> \
+    <span class="n">residual_stack</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">+</span> \
+    <span class="n">conv</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;MelGAN costs {melgan_total/10**9:0.0f} * 10^9 FLOPs per second.&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>MelGAN costs 9 * 10^9 FLOPs per second.
 </pre>
 </div>
 </div>
@@ -13227,11 +13300,11 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot f_
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lpc_total</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="mi">384</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">16</span> <span class="o">*</span> <span class="p">(</span><span class="mi">384</span> <span class="o">+</span> <span class="mi">16</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">256</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;LPCNet costs {lpc_total/10**9:0.1f} * 10^9 multiplications per second.&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lpc_total</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="mi">384</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">16</span> <span class="o">*</span> <span class="p">(</span><span class="mi">384</span> <span class="o">+</span> <span class="mi">16</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">256</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;LPCNet costs {lpc_total/10**9:0.1f} * 10^9 FLOPs per second.&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13248,7 +13321,7 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot f_
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>LPCNet costs 1.6 * 10^9 multiplications per second.
+<pre>LPCNet costs 3.2 * 10^9 FLOPs per second.
 </pre>
 </div>
 </div>
@@ -13267,39 +13340,20 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot f_
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The total multiplications in two convolutional neural networks:</p>
+<p>The total FLOPs in two convolutional neural networks:</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_convs</span> <span class="o">=</span> <span class="p">(</span><span class="mi">80</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">256</span> <span class="o">+</span> <span class="p">(</span><span class="mi">256</span> <span class="o">/</span> <span class="mi">8</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="mi">256</span> <span class="o">/</span> <span class="mi">8</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">256</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">222</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="mi">128</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;CNNs in NHV costs {nhv_convs/10**8:0.1f} * 10^8 multiplications per second.&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_convs</span> <span class="o">=</span> <span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">222</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="mi">128</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>CNNs in NHV costs 1.0 * 10^8 multiplications per second.
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -13307,57 +13361,39 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot f_
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Following steps are necessary for LTV filtering in the NHV model in frame $m$, $0\le m &lt; M - 1$. We carry out the convolutions in frequency domain with FFT.</p>
-<ol>
-<li>Convert $\hat h_n$ and $\hat h_h$ to DFT of impulse responses</li>
-<li>Calculate DFT of $x[n] w_L[n-mL]$ in each frame</li>
-<li>Convolution in frequency domain by multiplication of FFT coefficients. Then use IDFT and OLA to obtain $s[n]$</li>
-<li>The last 50ms FIR can be implemented with blocked FFT and OLA.  </li>
-</ol>
-<p>Total multiplications in LTV filtering:</p>
+<p>Following steps are necessary for LTV filtering in the NHV model in frame $m$, $0\le m &lt; M - 1$:</p>
+<ul>
+<li>Convert complex cepstrums to DFTs of impulse responses</li>
+<li>Calculate DFT of $x[n] w_L[n-mL]$ </li>
+<li>Convolution in frequency domain by multiplication of FFT coefficients</li>
+<li>Blocked convolution with 1024 points long FIR with FFT </li>
+</ul>
+<p>To estimate an upper bound, we assume all FFT sizes are 2048. 
+Total FLOPs in LTV filtering:</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_ffts</span> <span class="o">=</span> <span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="mi">1024</span> <span class="o">+</span> <span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">+</span> <span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">fft</span><span class="p">(</span><span class="mi">1024</span> <span class="o">+</span> <span class="mi">128</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="mi">128</span> <span class="o">+</span> <span class="mi">22050</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">*</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;LTV filtering in NHV costs {nhv_ffts/10**8:0.1f} * 10^8 multiplications per second.&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_ffts</span> <span class="o">=</span> <span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="n">complex_multiply</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="mi">128</span> <span class="o">+</span> <span class="mi">22050</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">*</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>LTV filtering in NHV costs 0.3 * 10^8 multiplications per second.
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_total</span> <span class="o">=</span> <span class="n">nhv_convs</span> <span class="o">+</span> <span class="n">nhv_ffts</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;NHV costs {nhv_total/10**8:0.1f} * 10^8 multiplications per second.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;NHV costs {nhv_total/10**8:0.1f} * 10^8 FLOPs per second. Convolutions accounts for {nhv_convs / (nhv_ffts + nhv_convs) * 100:02.0f}</span><span class="si">% o</span><span class="s2">f total complexity.&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13374,7 +13410,7 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot f_
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>NHV costs 1.2 * 10^8 multiplications per second.
+<pre>NHV costs 2.6 * 10^8 FLOPs per second. Convolutions accounts for 68% of total complexity.
 </pre>
 </div>
 </div>
@@ -13393,11 +13429,11 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot f_
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">gl_total</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span> <span class="o">*</span> <span class="mi">22050</span> <span class="o">/</span> <span class="mi">256</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">50</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;GL costs {gl_total/10**8:0.1f} * 10^8 multiplications per second.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;GL costs {gl_total/10**8:0.1f} * 10^8 FLOPs per second.&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13414,7 +13450,7 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot f_
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>GL costs 1.8 * 10^8 multiplications per second.
+<pre>GL costs 4.4 * 10^8 FLOPs per second.
 </pre>
 </div>
 </div>
