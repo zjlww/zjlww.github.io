@@ -13380,7 +13380,7 @@ Total FLOPs in LTV filtering:</p>
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_ffts</span> <span class="o">=</span> <span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">complex_multiply</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">128</span> <span class="o">+</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1024</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_ffts</span> <span class="o">=</span> <span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">complex_multiply</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2048</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">128</span> <span class="o">+</span> <span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="n">complex_multiply</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2048</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1024</span>
 </pre></div>
 
     </div>
@@ -13411,7 +13411,7 @@ Total FLOPs in LTV filtering:</p>
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>NHV costs 1.4 * 10^4 FLOPs per sample. NN accounts for 61% of total complexity.
+<pre>NHV costs 1.5 * 10^4 FLOPs per sample. NN accounts for 61% of total complexity.
 </pre>
 </div>
 </div>
