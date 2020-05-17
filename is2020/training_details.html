@@ -13077,8 +13077,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Training-Details-of-Models">Training Details of Models<a class="anchor-link" href="#Training-Details-of-Models">&#182;</a></h1><p>We provide the configuration files used in training. Hyper-parameters' names are mostly self-explanatory.</p>
-
+<h1 id="Training-Details-of-Models">Training Details of Models<a class="anchor-link" href="#Training-Details-of-Models">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -13091,10 +13090,6 @@ div#notebook {
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-
-<span class="n">sampling_rate</span> <span class="o">=</span> <span class="mi">22050</span>
-<span class="n">frame_length</span> <span class="o">=</span> <span class="mi">128</span>
-<span class="n">mel_length</span> <span class="o">=</span> <span class="mi">80</span>
 </pre></div>
 
     </div>
@@ -13105,14 +13100,90 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Learning-Rate">Learning Rate<a class="anchor-link" href="#Learning-Rate">&#182;</a></h2><p>In all experiments we used the following LR scheduling method:</p>
-
+<h2 id="Feature-Extraction">Feature Extraction<a class="anchor-link" href="#Feature-Extraction">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#### Mel Spectrogram Analysis</span>
+<span class="n">analysis_stft_fft_length</span> <span class="o">=</span> <span class="mi">2048</span>
+<span class="n">analysis_stft_window_length</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">mel_length</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="n">mel_min_f0</span> <span class="o">=</span> <span class="mf">40.0</span>
+<span class="n">mel_max_f0</span> <span class="o">=</span> <span class="mf">7600.0</span>
+
+<span class="c1">#### Sampling</span>
+<span class="n">sampling_rate</span> <span class="o">=</span> <span class="mi">22050</span>
+<span class="n">frame_length</span> <span class="o">=</span> <span class="mi">128</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="F0-Extraction">F0 Extraction<a class="anchor-link" href="#F0-Extraction">&#182;</a></h3><p>Many thanks to the authors of python wrappers:</p>
+<ul>
+<li>WORLD wrapper: <a href="https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder">https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder</a></li>
+<li>REAPER wrapper: <a href="https://github.com/r9y9/pyreaper">https://github.com/r9y9/pyreaper</a></li>
+</ul>
+<p>We used the following function to extract f0:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pyworld</span> <span class="k">import</span> <span class="n">dio</span><span class="p">,</span> <span class="n">stonemask</span>
+<span class="kn">from</span> <span class="nn">pyreaper</span> <span class="k">import</span> <span class="n">reaper</span>
+
+
+<span class="k">def</span> <span class="nf">repaer_stonemask</span><span class="p">(</span><span class="n">double_x</span><span class="p">,</span> <span class="n">frame_length</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    double_x: numpy double array [Samples]</span>
+<span class="sd">    frame_length: int, # of samples in a single frame</span>
+<span class="sd">    sampling_rate: int</span>
+<span class="sd">    returns: numpy double array [Frames]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_frames</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">double_x</span><span class="p">)</span> <span class="o">//</span> <span class="n">frame_length</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">n_frames</span> <span class="o">*</span> <span class="n">frame_length</span>
+    <span class="n">double_x</span> <span class="o">=</span> <span class="n">double_x</span><span class="p">[:</span><span class="n">n_samples</span><span class="p">]</span>
+    <span class="n">int_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">double_x</span> <span class="o">*</span> <span class="p">(</span><span class="mi">65536</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span> <span class="o">-</span><span class="mi">32768</span><span class="p">,</span> <span class="mi">32767</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_frames</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_frames</span><span class="p">)</span> <span class="o">*</span> <span class="n">frame_length</span> <span class="o">/</span> <span class="n">sampling_rate</span> <span class="o">+</span> <span class="n">frame_length</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">sampling_rate</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">f0_times</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">reaper</span><span class="p">(</span><span class="n">int_x</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">minf0</span><span class="o">=</span><span class="mf">40.0</span><span class="p">,</span> <span class="n">maxf0</span><span class="o">=</span><span class="mf">600.0</span><span class="p">)</span>
+    <span class="n">coarse_f0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">f0_times</span><span class="p">,</span> <span class="n">f0</span><span class="p">)</span>
+    <span class="n">fine_f0</span> <span class="o">=</span> <span class="n">stonemask</span><span class="p">(</span><span class="n">double_x</span><span class="p">,</span> <span class="n">coarse_f0</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fine_f0</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Optimizer">Optimizer<a class="anchor-link" href="#Optimizer">&#182;</a></h2><p>We used the Adam Optimizer with $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon=1\times 10^{-8}$ in all models.
+We applied Weight Normalization to all network weights.
+In all experiments we used the following Noam learning rate scheduling, with different learning rates for generators and discriminators.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">noam_lr</span><span class="p">(</span><span class="n">warmup_steps</span><span class="p">,</span> <span class="n">min_lr</span><span class="p">,</span> <span class="n">init_lr</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="mf">0.35</span><span class="p">):</span>
@@ -13133,14 +13204,15 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="STFT-Loss">STFT Loss<a class="anchor-link" href="#STFT-Loss">&#182;</a></h2><p>We used following STFTLoss Definition in PyTorch.</p>
+<h2 id="Losses">Losses<a class="anchor-link" href="#Losses">&#182;</a></h2><p>The weight between adversarial loss $L_G$, $L_D$, and reconstruction loss $L_R$ is different for each model. See <code>adv_ratio</code> in configs below.</p>
+<p>We used following STFTLoss Definition in PyTorch.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">STFTLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -13174,7 +13246,7 @@ div#notebook {
             <span class="n">Z</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stft</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fft_length</span><span class="p">,</span> <span class="n">hop_length</span><span class="p">,</span> <span class="n">window_length</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span> <span class="c1"># [2 x Batch, Frame, 2]</span>
             <span class="n">SquareZ</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-10</span> <span class="c1"># [2 x Batch, Frame]</span>
             <span class="n">SquareX</span><span class="p">,</span> <span class="n">SquareY</span> <span class="o">=</span> <span class="n">SquareZ</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">MagZ</span> <span class="o">=</span> <span class="n">SquareZ</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span> <span class="c1"># NOTICE: read more about STFT Loss</span>
+            <span class="n">MagZ</span> <span class="o">=</span> <span class="n">SquareZ</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
             <span class="n">MagX</span><span class="p">,</span> <span class="n">MagY</span> <span class="o">=</span> <span class="n">MagZ</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_scale_type</span> <span class="o">==</span> <span class="s2">&quot;log_linear&quot;</span><span class="p">:</span>
                 <span class="n">loss</span> <span class="o">+=</span> <span class="p">(</span><span class="n">MagX</span> <span class="o">-</span> <span class="n">MagY</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">SquareX</span><span class="o">.</span><span class="n">log</span><span class="p">()</span> <span class="o">-</span> <span class="n">SquareY</span><span class="o">.</span><span class="n">log</span><span class="p">())</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
@@ -13193,236 +13265,103 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="NHV">NHV<a class="anchor-link" href="#NHV">&#182;</a></h2><p>The NHV model is trained 600K steps.</p>
+<h2 id="Hyperparameters">Hyperparameters<a class="anchor-link" href="#Hyperparameters">&#182;</a></h2><ul>
+<li>We used <a href="https://github.com/nii-yamagishilab/project-CURRENNT-scripts">the source code of NSF</a>. We only changed the sampling rate config. <code>hn-sinc-NSF</code> used in evaluation is trained for 49 epoches. Training took about 3 days on a single 2080Ti.</li>
+<li>NSF-noadv is trained without adversarial loss functions. Training took less than 1 day on a single 2080Ti.</li>
+</ul>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">NHVConfig</span><span class="p">:</span>
-    <span class="c1">#### Batch Loading Configs</span>
-    <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">segment_length_s</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="n">segment_length_frames</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">segment_length_s</span> <span class="o">*</span> <span class="n">sampling_rate</span> <span class="o">/</span> <span class="n">frame_length</span><span class="p">)</span>
-    <span class="n">segment_length</span> <span class="o">=</span> <span class="n">segment_length_frames</span> <span class="o">*</span> <span class="n">frame_length</span>
-
-    <span class="c1">#### Maximum Number of Harmonics</span>
-    <span class="n">source_harmonics</span> <span class="o">=</span> <span class="mi">100</span>
-
-    <span class="c1">#### Training</span>
-    <span class="c1"># Generator</span>
-    <span class="n">g_warmup_steps</span> <span class="o">=</span> <span class="mi">4000</span>
-    <span class="n">g_decay_lr</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">g_init_lr</span> <span class="o">=</span> <span class="mf">0.0006</span>
-    <span class="n">g_min_lr</span> <span class="o">=</span> <span class="mf">0.00001</span>
-    <span class="n">g_grad_clip</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">g_grad_clip_max_norm</span> <span class="o">=</span> <span class="mf">100.0</span>
-    <span class="c1"># Discriminator</span>
-    <span class="n">d_warmup_steps</span> <span class="o">=</span> <span class="mi">20000</span>
-    <span class="n">d_decay_lr</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">d_init_lr</span> <span class="o">=</span> <span class="mf">0.0002</span>
-    <span class="n">d_min_lr</span> <span class="o">=</span> <span class="mf">0.00001</span>
-    <span class="c1"># Adversarial Loss Ratio, scales up L_G and L_D by adv_ratio </span>
-    <span class="n">adv_ratio</span> <span class="o">=</span> <span class="mf">4.0</span>
-
-    <span class="c1">#### STFT Loss configuration</span>
-    <span class="n">loss_window_lengths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">2048</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">1024</span><span class="p">))</span>
-    <span class="n">loss_fft_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">wnd</span> <span class="o">*</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">wnd</span> <span class="ow">in</span> <span class="n">loss_window_lengths</span><span class="p">]</span>
-    <span class="n">loss_hop_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">wnd</span> <span class="o">//</span> <span class="mi">4</span> <span class="k">for</span> <span class="n">wnd</span> <span class="ow">in</span> <span class="n">loss_window_lengths</span><span class="p">]</span>
-    <span class="n">loss_scale_type</span> <span class="o">=</span> <span class="s2">&quot;log_linear&quot;</span>
-
-    <span class="c1">#### FFT size used in converting cepstrums</span>
-    <span class="n">cepstrum_fft_length</span> <span class="o">=</span> <span class="mi">1024</span> <span class="c1"># The impulse Response would be -1024 ~ + 1024 of length 2049</span>
-
-    <span class="c1">#### Length of Cepstrums</span>
-    <span class="c1"># Harmonic:</span>
-    <span class="n">harmonic_time_ms</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">harmonic_max_quefrency</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">sampling_rate</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">harmonic_time_ms</span><span class="p">)</span>
-    <span class="c1"># Noise:</span>
-    <span class="n">noise_time_ms</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">noise_max_quefrency</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">sampling_rate</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">noise_time_ms</span><span class="p">)</span>
-
-    <span class="c1">#### Network Hidden Size</span>
-    <span class="n">hidden_size</span> <span class="o">=</span> <span class="mi">256</span>
-
-    <span class="c1">#### Reverb with exponential decay, x&#39;[n] = 0.995 ^ n * x[n]</span>
-    <span class="n">reverb_length</span> <span class="o">=</span> <span class="mi">1024</span>
-    <span class="n">reverb_decay</span> <span class="o">=</span> <span class="mf">0.995</span>
-
-    <span class="c1">#### Discriminator Structure</span>
-    <span class="n">d_residual_channels</span> <span class="o">=</span> <span class="mi">64</span>
-    <span class="n">d_gate_channels</span> <span class="o">=</span> <span class="mi">128</span>
-    <span class="n">d_skip_channels</span> <span class="o">=</span> <span class="mi">64</span>
-    <span class="n">d_kernel_size</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">d_cond_channels</span> <span class="o">=</span> <span class="n">mel_length</span>
-    <span class="n">d_layers</span> <span class="o">=</span> <span class="mi">14</span>
-    <span class="n">d_stacks</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">d_is_causal</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">n_discriminators</span> <span class="o">=</span> <span class="mi">1</span>
-
-    <span class="c1">#### Whether to use Pitch Adaptive Liftering</span>
-    <span class="n">liftering</span> <span class="o">=</span> <span class="kc">False</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="b-NSF-adv">b-NSF-adv<a class="anchor-link" href="#b-NSF-adv">&#182;</a></h2><p>The b-NSF-adv model is trained 350K steps.</p>
+<table>
+<thead><tr>
+<th style="text-align:left">Models</th>
+<th style="text-align:left">NHV</th>
+<th style="text-align:left">b-NSF-adv</th>
+<th style="text-align:left">Parallel WaveGAN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>G Learning Rate</strong></td>
+<td style="text-align:left">Noam LR Scheduling,<br />warm up steps = 4000,<br />initial LR = 0.0006,<br />min LR = 0.00001</td>
+<td style="text-align:left">Same as NHV;<br />except that initial LR is 0.001</td>
+<td style="text-align:left">Same as b-NSF-adv.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>D Learning Rate</strong></td>
+<td style="text-align:left">Noam LR Scheduling,<br />warm up steps = 20000,<br />initial LR = 0.0002,<br />min LR = 0.00001</td>
+<td style="text-align:left">Same as NHV.</td>
+<td style="text-align:left">Same as NHV.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Optimizers</strong></td>
+<td style="text-align:left">Default Adam in PyTorch. Adam with $\beta_1 = 0.9$ and $\beta_2 = 0.999$, $\epsilon = 1\times 10 ^{-8}$</td>
+<td style="text-align:left">Same as NHV.</td>
+<td style="text-align:left">Same as NHV.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Reconstruction Loss $L_R$</strong></td>
+<td style="text-align:left">STFT Loss with window sizes (128, 256, 384, 512, 640, 768, 896, 1024, 1536, 2048, 3072, 4096), <br />sum of L1 and log-L1 amplitude distance, (<code>log_linear</code> in the implementation); <br />FFT lengths are twice the window sizes; Window shifts are 1/4 the window sizes;</td>
+<td style="text-align:left">Same as NHV; window lengths is changed to (16, 32, 64, 128, 256, 512, 1024, 2048); <br />We used L1 amplitude distance only.</td>
+<td style="text-align:left">Same as b-NSF-adv.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Weight of $L_R$ and $L_G$, $L_D$</strong></td>
+<td style="text-align:left">$L_G$ and $L_D$ weighted by 4.0</td>
+<td style="text-align:left">$L_G$ and $L_D$ weighted by 0.1</td>
+<td style="text-align:left">$L_G$ and $L_D$ weighted by 0.4</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Generator Details</strong></td>
+<td style="text-align:left">Described in our paper. Conditioned on only log-mel spectrogram. The final FIR has length 1000, and an exponential decaying rate 0.995.</td>
+<td style="text-align:left">Same as described in the original paper. Conditioned on only log-mel spectrogram.</td>
+<td style="text-align:left">Same as described in the original paper. Non-causal 30 layer WaveNet Conditioned on log f0, VUV and log-mel spectrograms.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Discriminator Details</strong></td>
+<td style="text-align:left">Described in our paper. Conditioned on log-mel spectrogram.</td>
+<td style="text-align:left">A 10 layer CNN, with kernel size set to 3, stride set to (2 ,2, 4, 2, 2, 2, 1, 1, 1, 1). Each layer followed by leaky ReLU activation with nevative slope 0.2. No conditioning used.</td>
+<td style="text-align:left">Same as described in the original paper. No conditioning used.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Condition Upsampling</strong></td>
+<td style="text-align:left">Simply repeat each frame 128 times.</td>
+<td style="text-align:left">Basically the same as described in the original paper. BiLSTM + 1DConv, both with channels = 80. Kernel size of CNN is 3. CNN is followed by BatchNorm1D and $\tanh$ activation.</td>
+<td style="text-align:left">Upsampled by two  ConvTranspose2D, with kernel size 3 on frequency axis, and kernel sizes (16, 32) on time axis. Each layer is followed by a LeakyReLU activation with negative slope 0.4</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>F0 Upsampling</strong></td>
+<td style="text-align:left">Repeat</td>
+<td style="text-align:left">Repeat</td>
+<td style="text-align:left">n/a</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Adversarial Loss Formulation</strong></td>
+<td style="text-align:left">Hinge version GAN objective.</td>
+<td style="text-align:left">Same as NHV</td>
+<td style="text-align:left">Same as NHV</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Total Steps</strong></td>
+<td style="text-align:left">350K</td>
+<td style="text-align:left">350K</td>
+<td style="text-align:left">400K</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Training Time</strong></td>
+<td style="text-align:left">About 2 days on a single 2080Ti</td>
+<td style="text-align:left">About 2 days on 2080 Ti</td>
+<td style="text-align:left">About 2 days on 2080 Ti</td>
+</tr>
+</tbody>
+</table>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">NSFConfig</span><span class="p">:</span>
-    <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">segment_length_s</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">segment_length_frames</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">segment_length_s</span> <span class="o">*</span> <span class="n">sampling_rate</span> <span class="o">/</span> <span class="n">frame_length</span><span class="p">)</span>
-    <span class="n">segment_length</span> <span class="o">=</span> <span class="n">segment_length_frames</span> <span class="o">*</span> <span class="n">frame_length</span>
-
-    <span class="c1">#### Training</span>
-    <span class="c1"># Generator</span>
-    <span class="n">g_warmup_steps</span> <span class="o">=</span> <span class="mi">4000</span>
-    <span class="n">g_decay_lr</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">g_init_lr</span> <span class="o">=</span> <span class="mf">0.001</span>
-    <span class="n">g_min_lr</span> <span class="o">=</span> <span class="mf">0.00002</span>
-    <span class="n">g_grad_clip</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">g_grad_clip_max_norm</span> <span class="o">=</span> <span class="mf">20.0</span>
-    <span class="c1"># Discriminator</span>
-    <span class="n">d_warmup_steps</span> <span class="o">=</span> <span class="mi">20000</span>
-    <span class="n">d_decay_lr</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">d_init_lr</span> <span class="o">=</span> <span class="mf">0.0002</span>
-    <span class="n">d_min_lr</span> <span class="o">=</span> <span class="mf">0.00001</span>
-    <span class="c1"># Adversarial Loss Ratio, scales up L_G and L_D by adv_ratio </span>
-    <span class="n">adv_ratio</span> <span class="o">=</span> <span class="mf">0.1</span>
-
-    <span class="c1">#### Architecture</span>
-    <span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
-    <span class="n">feature_channels</span> <span class="o">=</span> <span class="n">mel_length</span>
-    <span class="n">condition_channels</span> <span class="o">=</span> <span class="mi">64</span>
-    <span class="n">residual_channels</span> <span class="o">=</span> <span class="mi">64</span>
-    <span class="n">kernel_size</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">upsample_kernel_size</span> <span class="o">=</span> <span class="mi">3</span>
-
-    <span class="c1">#### STFT Loss</span>
-    <span class="n">loss_window_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">2048</span><span class="p">]</span>
-    <span class="n">loss_fft_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">wnd</span> <span class="o">*</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">wnd</span> <span class="ow">in</span> <span class="n">loss_window_lengths</span><span class="p">]</span>
-    <span class="n">loss_hop_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">wnd</span> <span class="o">//</span> <span class="mi">4</span> <span class="k">for</span> <span class="n">wnd</span> <span class="ow">in</span> <span class="n">loss_window_lengths</span><span class="p">]</span>
-    <span class="n">loss_scale_type</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
-
-    <span class="c1">#### Discriminator Structure</span>
-    <span class="n">discriminator_configs</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">[</span>  <span class="c1"># inc,  outc, kernel, dilation, stride, padding</span>
-            <span class="p">(</span><span class="mi">1</span><span class="p">,</span>    <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">2</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">2</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">4</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">2</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">2</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">2</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)</span>
-        <span class="p">]</span>
-    <span class="p">]</span>
-
-    <span class="n">n_discriminators</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">discriminator_configs</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Parallel-WaveGAN">Parallel WaveGAN<a class="anchor-link" href="#Parallel-WaveGAN">&#182;</a></h2><p>The Parallel WaveGAN model is trained 400K steps.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">PWGConfig</span><span class="p">:</span>
-    <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">segment_length_s</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">segment_length_frames</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">segment_length_s</span> <span class="o">*</span> <span class="n">sampling_rate</span> <span class="o">/</span> <span class="n">frame_length</span><span class="p">)</span>
-    <span class="n">segment_length</span> <span class="o">=</span> <span class="n">segment_length_frames</span> <span class="o">*</span> <span class="n">frame_length</span>
-
-    <span class="c1">#### Source Model</span>
-    <span class="n">source_harmonics</span> <span class="o">=</span> <span class="mi">100</span>
-
-    <span class="c1">#### Training</span>
-    <span class="c1"># Generator</span>
-    <span class="n">g_warmup_steps</span> <span class="o">=</span> <span class="mi">4000</span>
-    <span class="n">g_decay_lr</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">g_init_lr</span> <span class="o">=</span> <span class="mf">0.001</span>
-    <span class="n">g_min_lr</span> <span class="o">=</span> <span class="mf">0.00002</span>
-    <span class="n">g_grad_clip</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">g_grad_clip_max_norm</span> <span class="o">=</span> <span class="mf">20.0</span>
-    <span class="c1"># Discriminator</span>
-    <span class="n">d_warmup_steps</span> <span class="o">=</span> <span class="mi">20000</span>
-    <span class="n">d_decay_lr</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">d_init_lr</span> <span class="o">=</span> <span class="mf">0.0005</span>
-    <span class="n">d_min_lr</span> <span class="o">=</span> <span class="mf">0.00001</span>
-    <span class="c1"># Adversarial Loss Ratio, scales up L_G and L_D by adv_ratio </span>
-    <span class="n">adv_ratio</span> <span class="o">=</span> <span class="mf">0.4</span>
-
-    <span class="c1">#### WaveNet Architecture</span>
-    <span class="n">condition_channels</span> <span class="o">=</span> <span class="n">mel_length</span>
-    <span class="n">layers</span> <span class="o">=</span> <span class="mi">30</span>
-    <span class="n">stacks</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">residual_channels</span> <span class="o">=</span> <span class="mi">64</span>
-    <span class="n">gate_channels</span> <span class="o">=</span> <span class="mi">128</span>
-    <span class="n">skip_channels</span> <span class="o">=</span> <span class="mi">64</span>
-    <span class="n">kernel_size</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">upsample_factor</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">]</span>
-
-    <span class="c1">#### STFT Loss</span>
-    <span class="n">loss_window_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">2048</span><span class="p">]</span>
-    <span class="n">loss_fft_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">wnd</span> <span class="o">*</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">wnd</span> <span class="ow">in</span> <span class="n">loss_window_lengths</span><span class="p">]</span>
-    <span class="n">loss_hop_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">wnd</span> <span class="o">//</span> <span class="mi">4</span> <span class="k">for</span> <span class="n">wnd</span> <span class="ow">in</span> <span class="n">loss_window_lengths</span><span class="p">]</span>
-    <span class="n">loss_scale_type</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
-
-    <span class="c1">#### Discriminator Structure</span>
-    <span class="n">discriminator_configs</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">[</span>  <span class="c1"># inc,  outc, kernel, dilation, stride, padding</span>
-            <span class="p">(</span><span class="mi">1</span><span class="p">,</span>    <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">2</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">3</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">4</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">5</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">6</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">7</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>   <span class="mi">64</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">8</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">),</span>
-            <span class="p">(</span><span class="mi">64</span><span class="p">,</span>    <span class="mi">1</span><span class="p">,</span>   <span class="mi">3</span><span class="p">,</span>      <span class="mi">1</span><span class="p">,</span>        <span class="mi">1</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)</span>
-        <span class="p">]</span>
-    <span class="p">]</span>
-
-    <span class="n">n_discriminators</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">discriminator_configs</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 </div>
     </div>
   </div>
