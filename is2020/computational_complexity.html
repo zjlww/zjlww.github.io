@@ -13340,8 +13340,7 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot 2 
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The total FLOPs in two convolutional neural networks:</p>
-
+<h3 id="Contribution-of-Convolutions">Contribution of Convolutions<a class="anchor-link" href="#Contribution-of-Convolutions">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -13351,6 +13350,7 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot 2 
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_convs</span> <span class="o">=</span> <span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">222</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">128</span>
+<span class="n">nhv_filters</span> <span class="o">=</span> <span class="mi">0</span>
 </pre></div>
 
     </div>
@@ -13361,16 +13361,17 @@ $C=\left(3 d N_{A}^{2}+3 N_{B}\left(N_{A}+N_{B}\right)+2 N_{B} Q\right) \cdot 2 
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Following steps are necessary for LTV filtering in the NHV model in frame $m$, $0\le m &lt; M - 1$:</p>
-<ul>
-<li>Convert complex cepstrums to DFTs of impulse responses $H_h[m, k]$ and $H_u[m, k]$</li>
-<li>Calculate DFT of $p[n] w_L[n-mL]$ and $u[n] w_L[n-mL]$</li>
-<li>Convolution in frequency domain by multiplication of FFT coefficients</li>
-<li>OLA in each frame to obtain $s_h[n]$ and $s_u[n]$</li>
-<li>Blocked convolution with 1024 points long FIR with FFT </li>
-</ul>
-<p>To estimate an upper bound, we assume all FFT sizes are 2048. 
-Total FLOPs in LTV filtering:</p>
+<h3 id="Contribution-of-Filters">Contribution of Filters<a class="anchor-link" href="#Contribution-of-Filters">&#182;</a></h3><p>We assume $N = 2048$ although $N = 1024$ is good enough.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ol>
+<li>Complex cepstrum $\hat h_h$ and $\hat h_n$ are converted to DFT of $\tilde h_h$ and $\tilde h_n$. The point-wise exponential function is ignored. </li>
+</ol>
 
 </div>
 </div>
@@ -13380,7 +13381,76 @@ Total FLOPs in LTV filtering:</p>
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_ffts</span> <span class="o">=</span> <span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">complex_multiply</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2048</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">128</span> <span class="o">+</span> <span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="n">complex_multiply</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2048</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1024</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_filters</span> <span class="o">+=</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">128</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ol>
+<li>DFT of $p[n] w_L[n-mL]$ and $u[n] w_l[n-mL]$ is computed in each frame</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_filters</span> <span class="o">+=</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">128</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ol>
+<li>Convolution in the frequency domain, then overlap add.</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_filters</span> <span class="o">+=</span> <span class="p">(</span><span class="n">complex_multiply</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2048</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">128</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ol>
+<li>Suppose the final FIR is implemented with blocked FFT with frame shift 1024.</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_filters</span> <span class="o">+=</span> <span class="p">(</span><span class="n">fft</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">complex_multiply</span><span class="p">(</span><span class="mi">2048</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2048</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1024</span>
 </pre></div>
 
     </div>
@@ -13390,11 +13460,11 @@ Total FLOPs in LTV filtering:</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_total</span> <span class="o">=</span> <span class="n">nhv_convs</span> <span class="o">+</span> <span class="n">nhv_ffts</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;NHV costs {nhv_total/10**4:0.1f} * 10^4 FLOPs per sample. NN accounts for {nhv_convs / (nhv_ffts + nhv_convs) * 100:02.0f}</span><span class="si">% o</span><span class="s2">f total complexity.&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nhv_total</span> <span class="o">=</span> <span class="n">nhv_convs</span> <span class="o">+</span> <span class="n">nhv_filters</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;NHV costs {nhv_total/10**4:0.1f} * 10^4 FLOPs per sample. NN accounts for {nhv_convs / (nhv_filters + nhv_convs) * 100:02.0f}</span><span class="si">% o</span><span class="s2">f total complexity.&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
