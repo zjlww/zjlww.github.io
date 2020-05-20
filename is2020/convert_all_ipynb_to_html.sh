@@ -3,6 +3,5 @@ for f in *.ipynb; do
 		continue;
 	fi;
 	echo -e "\e[34mConverting $f to HTML.\e[32m";
-	jupyter nbconvert --execute --to html $f;
+	jupyter nbconvert --to html $f;
 done;
-
