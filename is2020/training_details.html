@@ -13285,7 +13285,8 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <th>NHV(GAN)</th>
 <th style="text-align:left">b-NSF-adv</th>
 <th style="text-align:left">Parallel WaveGAN</th>
-<th style="text-align:left">DDSP</th>
+<th style="text-align:left">DDSP(S+N)</th>
+<th style="text-align:left">DDSP(S+N, cGAN)</th>
 </tr>
 </thead>
 <tbody>
@@ -13296,6 +13297,7 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <td style="text-align:left">Same as NHV;<br />except that initial LR is 0.001</td>
 <td style="text-align:left">Same as b-NSF-adv.</td>
 <td style="text-align:left">Same as NHV.</td>
+<td style="text-align:left">Same as NHV.</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>D Learning Rate</strong></td>
@@ -13304,11 +13306,13 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <td style="text-align:left">Same as NHV.</td>
 <td style="text-align:left">Same as NHV.</td>
 <td style="text-align:left">N/A</td>
+<td style="text-align:left">Same as NHV.</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Optimizers</strong></td>
 <td style="text-align:left">Default Adam in PyTorch. Adam with $\beta_1 = 0.9$ and $\beta_2 = 0.999$, $\epsilon = 1\times 10 ^{-8}$</td>
 <td>Same as NHV.</td>
+<td style="text-align:left">Same as NHV.</td>
 <td style="text-align:left">Same as NHV.</td>
 <td style="text-align:left">Same as NHV.</td>
 <td style="text-align:left">Same as NHV.</td>
@@ -13320,6 +13324,7 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <td style="text-align:left">Same as NHV; window lengths is changed to (16, 32, 64, 128, 256, 512, 1024, 2048); <br />We used L1 amplitude distance only.</td>
 <td style="text-align:left">Same as b-NSF-adv.</td>
 <td style="text-align:left">Same as NHV.</td>
+<td style="text-align:left">Same as NHV.</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Weight of $L_R$ and $L_G$, $L_D$</strong></td>
@@ -13328,6 +13333,7 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <td style="text-align:left">$L_G$ and $L_D$ weighted by 0.1</td>
 <td style="text-align:left">$L_G$ and $L_D$ weighted by 0.4</td>
 <td style="text-align:left">N/A</td>
+<td style="text-align:left">Same as NHV.</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Generator Details</strong></td>
@@ -13336,6 +13342,7 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <td style="text-align:left">Same as described in the original paper. Conditioned on only log-mel spectrogram.</td>
 <td style="text-align:left">Same as described in the original paper. Non-causal 30 layer WaveNet Conditioned on log f0, VUV and log-mel spectrograms.</td>
 <td style="text-align:left">Network same as NHV models. The parameters for harmonic and noise components  are harmonic distributions and noise filter FFT amplitude. Output  scaled by $\exp(\cdot)$. Harmonic distributions upsampled by hann windows as described in the  DDSP paper.</td>
+<td style="text-align:left">Same as DDSP(S+N).</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Discriminator Details</strong></td>
@@ -13344,6 +13351,7 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <td style="text-align:left">Same as NHV(GAN)</td>
 <td style="text-align:left">Same as described in the original paper. A 10 layer CNN, with kernel size set to 3, dilations set to (1, 1, 2, 3, 4, 5, 6, 7, 8, 1). Each layer followed by leaky RELU activation with negative slope 0.2. No conditioning used.</td>
 <td style="text-align:left">N/A</td>
+<td style="text-align:left">Same as NHV.</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Condition Upsampling</strong></td>
@@ -13351,6 +13359,7 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <td>N/A</td>
 <td style="text-align:left">Basically the same as described in the original paper. BiLSTM + 1DConv, both with channels = 80. Kernel size of CNN is 3. CNN is followed by BatchNorm1D and $\tanh$ activation.</td>
 <td style="text-align:left">Upsampled by two  ConvTranspose2D. First layer has kernel size (3, 16) with strides (1, 8). The second layer has kernel size (3, 32) with strides (1, 16). So the time dimension is upscaled by a factor of 128. Each layer is followed by a LeakyReLU activation with negative slope 0.4</td>
+<td style="text-align:left">N/A</td>
 <td style="text-align:left">N/A</td>
 </tr>
 <tr>
@@ -13360,20 +13369,23 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <td style="text-align:left">Repeat</td>
 <td style="text-align:left">N/A</td>
 <td style="text-align:left">Linear Interpolation</td>
+<td style="text-align:left">Linear Interpolation</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Adversarial Loss Formulation</strong></td>
 <td style="text-align:left">Hinge version GAN objective.</td>
 <td>Same as NHV.</td>
-<td style="text-align:left">Same as NHV</td>
-<td style="text-align:left">Same as NHV</td>
+<td style="text-align:left">Same as NHV.</td>
+<td style="text-align:left">Same as NHV.</td>
 <td style="text-align:left">N/A</td>
+<td style="text-align:left">Same as NHV.</td>
 </tr>
 <tr>
 <td style="text-align:left"><strong>Total Steps</strong></td>
 <td style="text-align:left">350K</td>
 <td>350K</td>
 <td style="text-align:left">350K</td>
+<td style="text-align:left">400K</td>
 <td style="text-align:left">400K</td>
 <td style="text-align:left">400K</td>
 </tr>
@@ -13384,25 +13396,13 @@ In all experiments we used the following Noam learning rate scheduling, with dif
 <td style="text-align:left">About 2 days on 2080 Ti</td>
 <td style="text-align:left">About 2 days on 2080 Ti</td>
 <td style="text-align:left">Less than 1 day on 1080Ti</td>
+<td style="text-align:left">About 2 days on 2080Ti</td>
 </tr>
 </tbody>
 </table>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 </div>
     </div>
   </div>
