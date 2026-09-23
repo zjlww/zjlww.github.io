@@ -1,5 +1,567 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>Redirecting to https://zjlww.github.io/notes/</title>
-<meta http-equiv="refresh" content="0; URL=https://zjlww.github.io/notes/">
-<link rel="canonical" href="https://zjlww.github.io/notes/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zhijun Liu | Personal Homepage</title>
+<meta name="description" content="Personal homepage of Zhijun Liu.">
+<meta name="theme-color" content="#ffffff">
+<link rel="canonical" href="https://zjlww.github.io">
+<style>
+:root {
+  --paper: #ffffff;
+  --ink: #17212b;
+  --body: #35424e;
+  --muted: #71808d;
+  --line: #e4e9ee;
+  --line-strong: #cfd7df;
+  --accent: #275f8b;
+  --accent-soft: #eef5fa;
+  --warm: #95664b;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.shell {
+  width: min(1080px, calc(100% - 56px));
+  margin: 0 auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(228, 233, 238, 0.92);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+}
+
+.nav-row {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.brand {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.brand:hover {
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.site-nav a {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.site-nav a:hover {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.hero {
+  padding: 88px 0 68px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  gap: 72px;
+  align-items: end;
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  color: var(--warm);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(48px, 7vw, 76px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 0.98;
+}
+
+.hero-location {
+  margin: 22px 0 0;
+  color: var(--body);
+  font-size: 17px;
+}
+
+.hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 28px;
+}
+
+.hero-link,
+.footer-link {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hero-link::after {
+  content: " \2197";
+  font-size: 12px;
+}
+
+.current-note {
+  padding: 18px 0 2px 22px;
+  border-left: 2px solid var(--accent);
+}
+
+.note-label,
+.section-label {
+  color: var(--warm);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.current-note p {
+  margin: 7px 0 0;
+  color: var(--body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.section {
+  padding: 66px 0;
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 82px;
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 56px;
+}
+
+.section-label {
+  padding-top: 10px;
+}
+
+.section-content {
+  min-width: 0;
+}
+
+.lead {
+  max-width: 760px;
+  margin: 0;
+  color: var(--body);
+  font-family: var(--serif);
+  font-size: 23px;
+  line-height: 1.55;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.tag {
+  padding: 4px 9px;
+  border: 1px solid #d8e5ef;
+  border-radius: 2px;
+  background: var(--accent-soft);
+  color: #285574;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.publication-list,
+.entry-list {
+  display: grid;
+  gap: 34px;
+}
+
+.publication {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 24px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.publication:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.publication-year,
+.entry-date {
+  padding-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+}
+
+.publication h3 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.38;
+}
+
+.publication-authors {
+  margin: 9px 0 0;
+  color: var(--body);
+  font-size: 14.5px;
+}
+
+.publication-authors strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.publication-meta {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.publication-award {
+  margin: 7px 0 0;
+  color: var(--warm);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.publication-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 13px;
+}
+
+.publication-link {
+  border-bottom: 1px solid currentColor;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.publication-link::after {
+  content: " \2197";
+  font-size: 11px;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  gap: 30px;
+  padding-bottom: 34px;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.entry:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.entry h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.42;
+}
+
+.entry-org {
+  color: var(--body);
+}
+
+.entry-separator {
+  color: var(--line-strong);
+}
+
+.entry-location,
+.entry-note {
+  display: block;
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.bullet-list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bullet-list li {
+  position: relative;
+  margin-top: 8px;
+  padding-left: 18px;
+  color: var(--body);
+  font-size: 14.5px;
+}
+
+.bullet-list li::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  content: "\2013";
+}
+
+.award-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.award-list li {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.award-list li:first-child {
+  padding-top: 0;
+}
+
+.award-list li:last-child {
+  border-bottom: 0;
+}
+
+.award-year,
+.award-detail {
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.skill-list {
+  margin: 0;
+}
+
+.skill-list > div {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 24px;
+  padding: 12px 0;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.skill-list > div:first-child {
+  padding-top: 0;
+}
+
+.skill-list > div:last-child {
+  border-bottom: 0;
+}
+
+.skill-list dt {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.skill-list dd {
+  margin: 0;
+  color: var(--body);
+}
+
+.site-footer {
+  padding: 34px 0 46px;
+}
+
+.footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.footer-row p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-link {
+  font-size: 13px;
+}
+
+@media (max-width: 780px) {
+  .shell {
+    width: min(100% - 36px, 1080px);
+  }
+
+  .site-header {
+    position: static;
+  }
+
+  .nav-row {
+    min-height: 58px;
+  }
+
+  .site-nav {
+    display: none;
+  }
+
+  .hero {
+    padding: 62px 0 52px;
+  }
+
+  .hero-grid,
+  .section-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .current-note {
+    max-width: 520px;
+  }
+
+  .section {
+    padding: 50px 0;
+  }
+
+  .section-label {
+    padding-top: 0;
+  }
+
+  .lead {
+    font-size: 20px;
+  }
+
+  .publication,
+  .entry {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .publication-year,
+  .entry-date {
+    padding-top: 0;
+  }
+
+  .award-list li {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .award-detail {
+    grid-column: 2;
+  }
+
+  .skill-list > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .footer-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media print {
+  .site-header,
+  .hero-links,
+  .site-footer {
+    display: none;
+  }
+
+  .hero {
+    padding-top: 0;
+  }
+
+  .section {
+    padding: 28px 0;
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+
+</style>
+</head>
+<body>
+<header class="site-header"><div class="shell nav-row"><a class="brand" href="#top" aria-label="Home">ZL</a><nav class="site-nav" aria-label="Primary navigation"><a href="#about">About</a><a href="#publications">Publications</a><a href="#experience">Experience</a><a href="#education">Education</a><a href="#awards">Awards</a></nav></div></header>
+<main id="top"><section class="hero"><div class="shell hero-grid"><div class="hero-copy"><p class="eyebrow">Speech generation, generative models, and efficient inference</p><h1>Zhijun Liu</h1><p class="hero-location">Shenzhen, China</p><div class="hero-links"><a href="https://scholar.google.com/citations?user=PU_Fgn8AAAAJ" class="hero-link" target="_blank" rel="noopener">Google Scholar</a><a href="https://github.com/zjlww" class="hero-link" target="_blank" rel="noopener">GitHub</a><a href="mailto:zhijunliu1@link.cuhk.edu.cn" class="hero-link">Email</a></div></div><aside class="current-note"><div class="note-label">Current</div><p>Top Seed Research Intern at ByteDance</p></aside></div></section>
+<section class="section" id="about"><div class="shell section-grid"><div class="section-label">About</div><div class="section-content"><p class="lead">PhD student in Computer Science at The Chinese University of Hong Kong, Shenzhen, working on speech generation and generative models. Research focuses on text-to-speech, autoregressive diffusion models, preference optimization, and reinforcement-learning-based fine-tuning. Currently a research intern at ByteDance; previously built an efficient diffusion-based TTS system at NetEase. Work published at ICASSP, InterSpeech, SLT, AAAI, and ISCSLP, including an ISCSLP 2024 Best Paper award.</p><div class="tag-list" aria-label="Research interests"><span class="tag">text-to-speech</span><span class="tag">speech synthesis</span><span class="tag">autoregressive diffusion models</span><span class="tag">preference optimization and RL fine-tuning</span><span class="tag">non-autoregressive and efficient TTS</span><span class="tag">neural vocoding</span><span class="tag">accent conversion</span><span class="tag">generative models for audio</span></div></div></div></section><section class="section" id="publications"><div class="shell section-grid"><div class="section-label">Publications</div><div class="section-content"><div class="publication-list"><article class="publication" id="pub-vgpo"><div class="publication-year">2026</div><div class="publication-body"><h3>VGPO: Fine-tuning Speech Autoregressive Diffusion Models with Value Guided Policy Optimization</h3><p class="publication-authors"><strong>Zhijun Liu</strong>, Dongya Jia, Yinghao Aaron Li, Chenpeng Du, Xiaobin Zhuang, Zhuo Chen, Yuping Wang, Yuxuan Wang, Shuai Wang, Haizhou Li</p><p class="publication-meta">SLT 2026 / Accepted</p><div class="publication-links"><a href="https://openreview.net/forum?id=LLWIaUZvEu" class="publication-link" target="_blank" rel="noopener">OpenReview</a><a href="https://github.com/zjlww/vgpo-web" class="publication-link" target="_blank" rel="noopener">Code</a><a href="https://zjlww.github.io/vgpo-web/" class="publication-link" target="_blank" rel="noopener">Demo</a></div></div></article><article class="publication" id="pub-dpo-speech-ardit"><div class="publication-year">2026</div><div class="publication-body"><h3>Direct Preference Optimization for Speech Autoregressive Diffusion Models</h3><p class="publication-authors"><strong>Zhijun Liu</strong>, Dongya Jia, Xiaoqiang Wang, Chenpeng Du, Shuai Wang, Zhuo Chen, Haizhou Li</p><p class="publication-meta">InterSpeech 2026 / Accepted</p><div class="publication-links"><a href="https://arxiv.org/abs/2509.18928" class="publication-link" target="_blank" rel="noopener">Paper</a><a href="https://arxiv.org/pdf/2509.18928" class="publication-link" target="_blank" rel="noopener">PDF</a></div></div></article><article class="publication" id="pub-e1-tts"><div class="publication-year">2025</div><div class="publication-body"><h3>E1 TTS: Simple and Fast Non-Autoregressive TTS</h3><p class="publication-authors"><strong>Zhijun Liu</strong>, Shuai Wang, Pengcheng Zhu, Mengxiao Bi, Haizhou Li</p><p class="publication-meta">ICASSP 2025</p><div class="publication-links"><a href="https://doi.org/10.1109/ICASSP49660.2025.10890230" class="publication-link" target="_blank" rel="noopener">Paper</a><a href="https://arxiv.org/pdf/2409.09351" class="publication-link" target="_blank" rel="noopener">PDF</a><a href="https://arxiv.org/abs/2409.09351" class="publication-link" target="_blank" rel="noopener">arXiv</a></div></div></article><article class="publication" id="pub-ardit"><div class="publication-year">2024</div><div class="publication-body"><h3>Autoregressive Diffusion Transformer for Text-to-Speech Synthesis</h3><p class="publication-authors"><strong>Zhijun Liu</strong>, Shuai Wang, Sho Inoue, Qibing Bai, Haizhou Li</p><p class="publication-meta">arXiv 2406.05551 / Preprint</p><div class="publication-links"><a href="https://arxiv.org/pdf/2406.05551" class="publication-link" target="_blank" rel="noopener">PDF</a><a href="https://arxiv.org/abs/2406.05551" class="publication-link" target="_blank" rel="noopener">arXiv</a><a href="https://zjlww.github.io/ardit-web/" class="publication-link" target="_blank" rel="noopener">Demo</a></div></div></article><article class="publication" id="pub-accent-conversion"><div class="publication-year">2024</div><div class="publication-body"><h3>Diffusion-Based Method with TTS Guidance for Foreign Accent Conversion</h3><p class="publication-authors">Qibing Bai, Shuai Wang, <strong>Zhijun Liu</strong>, Mingyang Zhang, Wei Rao, Yannan Wang, Haizhou Li</p><p class="publication-meta">ISCSLP 2024</p><p class="publication-award">ISCSLP 2024 Best Paper</p><div class="publication-links"><a href="https://doi.org/10.1109/ISCSLP63861.2024.10800623" class="publication-link" target="_blank" rel="noopener">Paper</a></div></div></article><article class="publication" id="pub-diffvoice"><div class="publication-year">2023</div><div class="publication-body"><h3>DiffVoice: Text-to-Speech with Latent Diffusion</h3><p class="publication-authors"><strong>Zhijun Liu</strong>, Yiwei Guo, Kai Yu</p><p class="publication-meta">ICASSP 2023</p><div class="publication-links"><a href="https://doi.org/10.1109/ICASSP49357.2023.10095100" class="publication-link" target="_blank" rel="noopener">Paper</a><a href="https://arxiv.org/pdf/2304.11750" class="publication-link" target="_blank" rel="noopener">PDF</a><a href="https://arxiv.org/abs/2304.11750" class="publication-link" target="_blank" rel="noopener">arXiv</a><a href="https://zjlww.github.io/diffvoice-web/" class="publication-link" target="_blank" rel="noopener">Demo</a></div></div></article><article class="publication" id="pub-unicats"><div class="publication-year">2023</div><div class="publication-body"><h3>UniCATS: A Unified Context-Aware Text-to-Speech Framework with Contextual VQ-Diffusion and Vocoding</h3><p class="publication-authors">Chenpeng Du, Yiwei Guo, Feiyu Shen, <strong>Zhijun Liu</strong>, Zheng Jiang, Xie Chen, Shuai Wang, Zhang Hui, Kai Yu</p><p class="publication-meta">AAAI 2023</p><div class="publication-links"><a href="https://doi.org/10.1609/aaai.v38i16.29747" class="publication-link" target="_blank" rel="noopener">Paper</a><a href="https://arxiv.org/pdf/2306.07547" class="publication-link" target="_blank" rel="noopener">PDF</a><a href="https://arxiv.org/abs/2306.07547" class="publication-link" target="_blank" rel="noopener">arXiv</a></div></div></article><article class="publication" id="pub-neural-homomorphic-vocoder"><div class="publication-year">2020</div><div class="publication-body"><h3>Neural Homomorphic Vocoder</h3><p class="publication-authors"><strong>Zhijun Liu</strong>, Kuan Chen, Kai Yu</p><p class="publication-meta">InterSpeech 2020</p><div class="publication-links"><a href="https://doi.org/10.21437/Interspeech.2020-3188" class="publication-link" target="_blank" rel="noopener">Paper</a><a href="https://www.isca-archive.org/interspeech_2020/liu20i_interspeech.pdf" class="publication-link" target="_blank" rel="noopener">PDF</a><a href="https://zjlww.github.io/nhv-web/" class="publication-link" target="_blank" rel="noopener">Demo</a></div></div></article><article class="publication" id="pub-blizzard-2019"><div class="publication-year">2019</div><div class="publication-body"><h3>SJTU Entry in Blizzard Challenge 2019</h3><p class="publication-authors">Bo Chen, Kuan Chen, <strong>Zhijun Liu</strong>, Zhihang Xu, Songze Wu, Chenpeng Du, Muyang Li, Sijin Li, Kai Yu</p><p class="publication-meta">Blizzard Challenge Workshop</p><div class="publication-links"><a href="https://doi.org/10.21437/Blizzard.2019-14" class="publication-link" target="_blank" rel="noopener">Paper</a><a href="https://www.isca-archive.org/blizzard_2019/chen19_blizzard.pdf" class="publication-link" target="_blank" rel="noopener">PDF</a></div></div></article></div></div></div></section><section class="section" id="experience"><div class="shell section-grid"><div class="section-label">Experience</div><div class="section-content"><div class="entry-list"><article class="entry"><div class="entry-date">2025-01 - Present</div><div class="entry-body"><h3><span>Top Seed Research Intern</span><span class="entry-separator"> / </span><span class="entry-org">ByteDance</span></h3><span class="entry-location">Shenzhen, China</span><p class="entry-note">With Zhuo Chen, Dongya Jia</p><ul class="bullet-list"><li>Research on reinforcement-learning-based fine-tuning of autoregressive diffusion TTS models.</li><li>Worked on speech generation and text-to-music generation, with emphasis on post-training of generative audio models.</li><li>Submitted two papers from this line of work.</li></ul></div></article><article class="entry"><div class="entry-date">2024-06 - 2024-08</div><div class="entry-body"><h3><span>Research Intern</span><span class="entry-separator"> / </span><span class="entry-org">NetEase</span></h3><span class="entry-location">Hangzhou, China</span><p class="entry-note">With Pengcheng Zhu</p><ul class="bullet-list"><li>Delivered an efficient diffusion-based text-to-speech system with strong audio quality.</li><li>Contributed to a paper accepted at ICASSP 2025.</li></ul></div></article></div></div></div></section><section class="section" id="education"><div class="shell section-grid"><div class="section-label">Education</div><div class="section-content"><div class="entry-list"><article class="entry"><div class="entry-date">2023-08 - Present</div><div class="entry-body"><h3><span>PhD Computer Science</span><span class="entry-separator"> / </span><span class="entry-org">The Chinese University of Hong Kong, Shenzhen</span></h3><span class="entry-location">Shenzhen, China</span><p class="entry-note">Advisors: Prof. Haizhou Li, Prof. Shuai Wang</p></div></article><article class="entry"><div class="entry-date">2020-09 - 2023-06</div><div class="entry-body"><h3><span>Master of Engineering Computer Science and Technology</span><span class="entry-separator"> / </span><span class="entry-org">Shanghai Jiao Tong University</span></h3><span class="entry-location">Shanghai, China</span><p class="entry-note">Advisors: Prof. Kai Yu</p></div></article><article class="entry"><div class="entry-date">2016-09 - 2020-06</div><div class="entry-body"><h3><span>Bachelor of Engineering Computer Science and Technology</span><span class="entry-separator"> / </span><span class="entry-org">Shanghai Jiao Tong University</span></h3><span class="entry-location">Shanghai, China</span></div></article></div></div></div></section><section class="section" id="awards"><div class="shell section-grid"><div class="section-label">Awards</div><div class="section-content"><ul class="award-list"><li><span class="award-year">2024</span><span>ISCSLP 2024 Best Paper</span><span class="award-detail">Diffusion-Based Method with TTS Guidance for Foreign Accent Conversion</span></li></ul></div></div></section></main>
+<footer class="site-footer"><div class="shell footer-row"><p>&copy; 2026 Zhijun Liu</p><div class="footer-links"><a href="https://scholar.google.com/citations?user=PU_Fgn8AAAAJ" class="footer-link" target="_blank" rel="noopener">Google Scholar</a><a href="https://github.com/zjlww" class="footer-link" target="_blank" rel="noopener">GitHub</a><a href="mailto:zhijunliu1@link.cuhk.edu.cn" class="footer-link">Email</a></div></div></footer>
+</body>
+</html>
